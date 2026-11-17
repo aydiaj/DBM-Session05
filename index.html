@@ -1,0 +1,2166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#102d49">
+    <meta name="description"
+        content="DBM Session 05: rebuild the EF Core journey, query a richer Inventory table and explain SQL and results. Practical tasks, student starter, hints and quick references.">
+    <title>DBM · Session 05 · EF Core recap and LINQ practice</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/codelab.css">
+    <link rel="stylesheet" href="css/session05.css">
+    <script defer src="js/inventory-data.js"></script>
+    <script defer src="js/session05.js"></script>
+</head>
+
+<body class="s4 s5">
+    <a class="skip-link" href="#s5-content">Skip to learning content</a>
+    <div class="shell">
+        <button id="s5-scrim" class="scrim mobile-scrim" aria-label="Close navigation" hidden></button>
+        <aside class="sidebar" id="s5-sidebar" aria-label="Lesson navigation">
+            <div class="brand">
+                <span class="brand-mark" aria-hidden="true">▤</span>
+                <div>
+                    <small>TVET INTERACTIVE</small><strong>CODELAB STUDIO</strong>
+                </div>
+                <button class="icon-button close-menu icon-btn" id="s5-close" aria-label="Close navigation">×</button>
+            </div>
+            <div class="course-block">
+                <span class="course-code">DBM · PDB2 · 2026–2027</span>
+                <h2>Database<br>Management</h2>
+                <p>05 / EF Core recap and LINQ practice</p>
+                <div class="progress-heading">
+                    <span>Lesson progress</span><strong id="s5-progress-text">0 / 8</strong>
+                </div>
+                <div class="progress-bar" id="s5-progress" role="progressbar" aria-label="Completed lesson steps"
+                    aria-valuemin="0" aria-valuemax="8" aria-valuenow="0">
+                    <div id="s5-progress-fill"></div>
+                </div>
+            </div>
+            <nav aria-label="Lesson sections">
+                <ol class="step-nav">
+                    <li><button class="step-link" data-step="0" aria-controls="s5-panel-0"><span
+                                class="step-num">01</span><span>Recall the EF Core journey<small>8
+                                    min</small></span><span class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="1" aria-controls="s5-panel-1"><span
+                                class="step-num">02</span><span>Read the richer model<small>10 min</small></span><span
+                                class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="2" aria-controls="s5-panel-2"><span
+                                class="step-num">03</span><span>Rebuild the working reader<small>22
+                                    min</small></span><span class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="3" aria-controls="s5-panel-3"><span
+                                class="step-num">04</span><span>Filter and search<small>20 min</small></span><span
+                                class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="4" aria-controls="s5-panel-4"><span
+                                class="step-num">05</span><span>Sort and shape the result<small>15
+                                    min</small></span><span class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="5" aria-controls="s5-panel-5"><span
+                                class="step-num">06</span><span>Choose the result you need<small>15
+                                    min</small></span><span class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="6" aria-controls="s5-panel-6"><span
+                                class="step-num">07</span><span>Build a complete report<small>20 min</small></span><span
+                                class="tick" aria-hidden="true">✓</span></button></li>
+                    <li><button class="step-link" data-step="7" aria-controls="s5-panel-7"><span
+                                class="step-num">08</span><span>Review and submit<small>10 min</small></span><span
+                                class="tick" aria-hidden="true">✓</span></button></li>
+                </ol>
+            </nav>
+            <div class="sidebar-resources">
+                <span>QUICK REFERENCES</span><a href="downloads/LINQ_Quick_Reference.pdf" target="_blank"
+                    rel="noopener">↗ LINQ quick reference</a><a href="downloads/EF10_Session05_Student_Starter.zip"
+                    download>↓ Student starter</a><a href="downloads/setup-inventory.sql" download>↓ SQL setup
+                    script</a><a href="#sources" id="s5-sources-link">↗ Sources and downloads</a><button id="s5-reset"
+                    type="button">↺ Reset this session</button><small id="s5-storage-status">Progress and notes save on
+                    this device.</small>
+            </div>
+            <div class="sidebar-foot">UNRWA Gaza Training Centre<br>Programming and Database Level 2<br>Eng. Abeer
+                Elaydi</div>
+        </aside>
+        <div class="workspace">
+            <header class="topbar"><button class="icon-button menu-button icon-btn menu-btn" id="s5-menu"
+                    aria-label="Open lesson navigation" aria-controls="s5-sidebar" aria-expanded="false">☰</button>
+                <div class="breadcrumb">DATABASE MANAGEMENT <span>/</span> <b>SESSION 05</b>
+                </div>
+                <div class="top-actions">
+                    <span class="time-pill">◷ 120 MIN</span><button class="icon-button icon-btn" id="s5-theme"
+                        aria-label="Switch to dark theme" aria-pressed="false">◐</button>
+                </div>
+            </header>
+            <main id="s5-content" class="main" tabindex="-1">
+                <section class="lesson" id="s5-panel-0" aria-labelledby="s5-title-0">
+                    <div class="hero hero-intro">
+                        <div class="hero-main">
+                            <span class="eyebrow">TVET INTERACTIVE CODELAB STUDIO · SESSION 05</span>
+                            <h1>Your EF Core<br><em>query toolkit</em>
+                            </h1>
+                            <p>Rebuild the journey.<br>Turn questions into LINQ.</p>
+                            <div class="chips">
+                                <span>DBM · PDB2</span><span>EF Core 10</span><span>120 minutes</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 01 / 08 · 8 MINUTES</span>
+                        <h1 id="s5-title-0" tabindex="-1">Recall the EF Core journey</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>What you will be able to do</h2>
+                        <p><strong>Today’s competency:</strong> rebuild an EF Core reader and produce correct inventory
+                            reports from SQL Server using LINQ.</p>
+                        <ul>
+                            <li>Rebuild the EF Core reading workflow from targeted TODOs.</li>
+                            <li>Filter, order and shape inventory reports.</li>
+                            <li>Choose a list, number, Boolean or single item.</li>
+                            <li>Explain when SQL runs and check the result.</li>
+                        </ul>
+                    </div>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Same journey. More useful questions.</strong>
+                            <p>Keep the familiar <code>Item</code> and context. Today the table also has price, stock,
+                                active status and an added date.</p>
+                        </div>
+                    </aside>
+                    <div class="s05-heading">
+                        <span class="section-kicker">RECAP THROUGH ACTION</span>
+                        <h2>Follow the EF Core DB-First journey</h2>
+                        <p>Select a stage. Match it to a file before you read the explanation.</p>
+                    </div>
+                    <ol class="s05-journey" id="journey-nav"></ol>
+                    <div id="journey-detail" class="s05-live" aria-live="polite"></div>
+                    <details class="s2-details">
+                        <summary>Keep the key words beside you</summary>
+                        <div class="reveal">
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Concept</th>
+                                            <th scope="col">In our application</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>Item</code></td>
+                                            <td>The C# entity type. Its mapped properties correspond to columns.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>DbSet&lt;Item&gt; Items</code></td>
+                                            <td>The context’s query entry point for Item entities.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>InventoryDbContext</code></td>
+                                            <td>Coordinates the model, provider, queries and tracked entities.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Connection string</td>
+                                            <td>The server, database and authentication settings.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Options builder</td>
+                                            <td>Builds the configuration passed to the context.</td>
+                                        </tr>
+                                        <tr>
+                                            <td>SQL Server provider</td>
+                                            <td>EF Core’s component for SQL Server. It translates supported LINQ
+                                                queries.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="s05-match card s2-card">
+                        <h2>Quick check: which component?</h2>
+                        <label for="role-choice">Which component translates our supported LINQ query for SQL
+                            Server?</label><select id="role-choice">
+                            <option value="">Choose one…</option>
+                            <option value="builder">The options builder</option>
+                            <option value="provider">The EF Core SQL Server provider</option>
+                            <option value="entity">The Item class</option>
+                        </select><button class="button s2-btn primary" id="role-check" type="button">Check my
+                            choice</button>
+                        <p id="role-feedback" class="s05-feedback" role="status"></p>
+                    </div>
+                    <label class="check"><input type="checkbox" id="recap-ready" data-save="recap-ready"><span>I can
+                            explain the entity, context, DbSet, provider and options builder.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev disabled>←
+                            Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="0" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-1" aria-labelledby="s5-title-1" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 02 / 08 · 10 MINUTES</span>
+                        <h1 id="s5-title-1" tabindex="-1">Read the richer model</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>Our Session 05 database</h2>
+                        <div class="s05-facts">
+                            <div>
+                                <b>16</b><span>sample records</span>
+                            </div>
+                            <div>
+                                <b>1</b><span>entity and table</span>
+                            </div>
+                            <div>
+                                <b>6</b><span>mapped properties</span>
+                            </div>
+                        </div>
+                        <p><code>DBM_Session05_Inventory</code> contains <code>dbo.Items</code>. The extra fields are a
+                            classroom extension of our Inventory example.</p>
+                        <p>Download and extract the starter before editing Item.cs. Open
+                            <code>EF10InventoryManager.sln</code>.
+                        </p>
+                        <div class="button-row"><a class="button s2-btn primary"
+                                href="downloads/EF10_Session05_Student_Starter.zip" download>↓ Student starter</a></div>
+                    </div>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Database First starting point</strong>
+                            <p>The table is prepared with SQL. We write the matching entity and context manually. Code
+                                First begins with the C# model and can use migrations to create or update the schema.
+                            </p>
+                        </div>
+                    </aside>
+                    <h2>Map each property to a column</h2>
+                    <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                        aria-label="Entity to column mapping">
+                        <table class="s2-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Property</th>
+                                    <th scope="col">C# type</th>
+                                    <th scope="col">SQL Server</th>
+                                    <th scope="col">Why it is here</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Id</code></td>
+                                    <td><code>int</code></td>
+                                    <td>
+                                        <code>int</code> · primary key
+                                    </td>
+                                    <td>Find one identifier.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Name</code></td>
+                                    <td><code>string</code></td>
+                                    <td>
+                                        <code>nvarchar(100)</code> · not null
+                                    </td>
+                                    <td>Search and alphabetise.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>UnitPrice</code></td>
+                                    <td><code>decimal</code></td>
+                                    <td><code>decimal(10,2)</code></td>
+                                    <td>Compare and sort prices.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Stock</code></td>
+                                    <td><code>int</code></td>
+                                    <td><code>int</code></td>
+                                    <td>Test availability.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>IsActive</code></td>
+                                    <td><code>bool</code></td>
+                                    <td><code>bit</code></td>
+                                    <td>Keep active items.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>AddedAt</code></td>
+                                    <td><code>DateTime</code></td>
+                                    <td><code>datetime2</code></td>
+                                    <td>Try a date range later.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <h2>TODO 01 · complete the mapping attributes</h2>
+                    <p>Open <code>EF10_InventoryModels/Item.cs</code>. The six properties are supplied. Add the Name
+                        attributes and the UnitPrice mapping at TODO 01A and 01B.</p>
+                    <details class="s2-details">
+                        <summary>Hint</summary>
+                        <div class="reveal">
+                            <p>Use <code>[Required]</code> and <code>[StringLength(100)]</code> above Name. Use a Column
+                                attribute with the SQL decimal type above UnitPrice.</p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Check the complete Item class</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>EF10_InventoryModels/Item.cs</span><button class="copy copy-btn"
+                                        type="button">Copy code</button>
+                                </div>
+                                <pre tabindex="0"><code>using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EF10_InventoryModels;
+
+public class Item
+{
+    public int Id { get; set; }
+
+    [Required]
+    [StringLength(100)]
+    public string Name { get; set; } = "";
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal UnitPrice { get; set; }
+
+    public int Stock { get; set; }
+    public bool IsActive { get; set; }
+    public DateTime AddedAt { get; set; }
+}</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>What does each important line mean?</summary>
+                        <div class="reveal">
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Line / symbol</th>
+                                            <th scope="col">Meaning</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>using System.ComponentModel.DataAnnotations;</code></td>
+                                            <td>Makes Required and StringLength available. A using directive imports
+                                                names; it does not install a package.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[Required]</code></td>
+                                            <td>The Name property is required in EF’s model.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[StringLength(100)]</code></td>
+                                            <td>Sets the model’s maximum Name length to 100.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>using System.ComponentModel.DataAnnotations.Schema;</code></td>
+                                            <td>Makes the Column mapping attribute available.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>[Column(TypeName = "decimal(10,2)")]</code></td>
+                                            <td>Matches UnitPrice to the SQL type: 10 total digits, 2 decimal places.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>public int Id { get; set; }</code></td>
+                                            <td>A readable/writable integer property. Id is a primary-key name
+                                                recognised by convention.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>public string Name { get; set; } = "";</code></td>
+                                            <td>Starts Name as an empty, non-null string. This does not make an empty
+                                                name valid business data.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>decimal / bool / DateTime</code></td>
+                                            <td>Money-style decimal values, true/false values and a date/time value.
+                                                System types are available through the project’s implicit usings.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Mapping describes the existing table</strong>
+                            <p>EF matches property and column names by convention. The <code>Items</code> DbSet name
+                                supplies the default table name; SQL Server’s default schema here is <code>dbo</code>.
+                                Different names need explicit mapping.</p>
+                            <p>These attributes do not alter this database or run automatic C# input validation. The
+                                prepared SQL already defines the column rules.</p>
+                        </div>
+                    </aside>
+                    <h2>Inspect the data</h2>
+                    <p>Look for repeated prices, zero stock and inactive records. They make our filters worth testing.
+                    </p>
+                    <div id="inventory-table"></div>
+                    <label class="check"><input type="checkbox" id="entity-map-ready"
+                            data-save="entity-map-ready"><span>I can map all six properties and explain the
+                            attributes.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="1" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-2" aria-labelledby="s5-title-2" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 03 / 08 · 22 MINUTES</span>
+                        <h1 id="s5-title-2" tabindex="-1">Rebuild the working reader</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>Start with the prepared solution</h2>
+                        <ol>
+                            <li>Extract the starter and open <code>EF10InventoryManager.sln</code>.</li>
+                            <li>In SSMS, run <code>setup-inventory.sql</code>, then <code>verify-inventory.sql</code>.
+                            </li>
+                            <li>Set <code>EF10_InventoryManager</code> as the startup project and restore packages.</li>
+                        </ol>
+                        <div class="button-row">
+                            <a class="button s2-btn primary" href="downloads/EF10_Session05_Student_Starter.zip"
+                                download>↓ Student starter</a><a class="button s2-btn secondary"
+                                href="downloads/setup-inventory.sql" download>↓ SQL setup</a><a
+                                class="button s2-btn secondary" href="downloads/verify-inventory.sql" download>↓ Verify
+                                data</a>
+                        </div>
+                        <p class="small">Use the same SQL Server instance as SSMS. Fresh setup has 16 items and 13
+                            active items.</p>
+                    </div>
+                    <h2>One runnable app, two reusable libraries</h2>
+                    <div class="s05-projects" role="group" aria-label="Explore the three projects">
+                        <button type="button" data-project="console" aria-pressed="true"><small>CONSOLE
+                                APPLICATION</small><b>InventoryManager</b><span>Run Program.cs</span></button><button
+                            type="button" data-project="database" aria-pressed="false"><small>CLASS
+                                LIBRARY</small><b>InventoryDBLibrary</b><span>Define the context</span></button><button
+                            type="button" data-project="model" aria-pressed="false"><small>CLASS
+                                LIBRARY</small><b>InventoryModels</b><span>Define Item</span></button>
+                    </div>
+                    <div id="project-detail" class="s05-live" aria-live="polite"></div>
+                    <h2>TODO 00 · point to the new database</h2>
+                    <p>In <code>appsettings.json</code>, replace <code>YOUR_SERVER</code>. Keep the Session 05 database
+                        name.</p>
+                    <div class="code-shell">
+                        <div class="code-head">
+                            <span>EF10_InventoryManager/appsettings.json</span><button class="copy copy-btn"
+                                type="button">Copy code</button>
+                        </div>
+                        <pre tabindex="0"><code>{
+  "ConnectionStrings": {
+    "InventoryDbConnection": "Server=YOUR_SERVER;Database=DBM_Session05_Inventory;Integrated Security=True;Encrypt=True;TrustServerCertificate=True;Connect Timeout=10;"
+  }
+}</code></pre>
+                    </div>
+                    <details class="s2-details">
+                        <summary>Connection string: read the parts</summary>
+                        <div class="reveal">
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Setting</th>
+                                            <th scope="col">Meaning</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>Server</code></td>
+                                            <td>The SQL Server instance copied from SSMS. JSON writes a backslash as
+                                                <code>\\</code>.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Database</code></td>
+                                            <td>The database used by this app: DBM_Session05_Inventory.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Integrated Security=True</code></td>
+                                            <td>Use your Windows account.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Encrypt=True;TrustServerCertificate=True</code></td>
+                                            <td>Encrypt the classroom connection and accept its local server
+                                                certificate.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Connect Timeout=10</code></td>
+                                            <td>Wait up to 10 seconds to establish a connection.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p class="small">For SQL authentication, use the instructor-supplied
+                                <code>DBM_EF05_CONNECTION</code> override. Keep passwords out of submissions.
+                            </p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Recap · how Program.cs reads the settings</summary>
+                        <div class="reveal">
+                            <p>This code is already supplied. Read it before you build the EF Core options.</p>
+                            <div class="code-shell">
+                                <div class="code-head"><span>Program.cs · supplied configuration loader</span><button
+                                        class="copy copy-btn" type="button">Copy code</button></div>
+                                <pre tabindex="0"><code>var configuration = new ConfigurationBuilder()
+    .SetBasePath(AppContext.BaseDirectory)
+    .AddJsonFile("appsettings.json", optional: false)
+    .Build();
+string? connectionString = Environment.GetEnvironmentVariable("DBM_EF05_CONNECTION")
+    ?? configuration.GetConnectionString("InventoryDbConnection");</code></pre>
+                            </div>
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Configuration loader recap">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Part</th>
+                                            <th scope="col">Job</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>ConfigurationBuilder</code></td>
+                                            <td>Build an object that reads application settings. Its namespace is
+                                                <code>Microsoft.Extensions.Configuration</code>.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>SetBasePath(...)</code></td>
+                                            <td>Look in the running app’s output folder. The starter copies
+                                                appsettings.json there when it builds.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>AddJsonFile(..., optional: false)</code></td>
+                                            <td>Read the JSON file. A missing file is an error.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>GetConnectionString(...)</code></td>
+                                            <td>Read the named entry under <code>ConnectionStrings</code>.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>??</code></td>
+                                            <td>Use the right-hand value if the environment override is null. Normal
+                                                classroom setup uses the JSON entry.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>string?</code></td>
+                                            <td>The value may be null. The supplied check stops the app if the
+                                                connection string is missing or still contains YOUR_SERVER.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p><strong>Two builders, two jobs:</strong> ConfigurationBuilder reads settings;
+                                DbContextOptionsBuilder configures EF Core. Neither opens a database connection here.
+                            </p>
+                        </div>
+                    </details>
+                    <h2>TODO 02 · expose Items in the context</h2>
+                    <p>In <code>EF10_InventoryDBLibrary/InventoryDBContext.cs</code>, add the property after the
+                        supplied constructor.</p>
+                    <div class="code-shell">
+                        <div class="code-head">
+                            <span>The property to add</span><button class="copy copy-btn" type="button">Copy
+                                code</button>
+                        </div>
+                        <pre tabindex="0"><code>public DbSet&lt;Item&gt; Items { get; set; }</code></pre>
+                    </div>
+                    <details class="s2-details">
+                        <summary>Read the whole context</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>InventoryDBContext.cs</span><button class="copy copy-btn" type="button">Copy
+                                        code</button>
+                                </div>
+                                <pre tabindex="0"><code>using EF10_InventoryModels;
+using Microsoft.EntityFrameworkCore;
+
+namespace EF10_InventoryDBLibrary;
+
+public class InventoryDbContext : DbContext
+{
+    public InventoryDbContext(DbContextOptions&lt;InventoryDbContext&gt; options)
+        : base(options)
+    {
+    }
+
+    public DbSet&lt;Item&gt; Items { get; set; }
+}</code></pre>
+                            </div>
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Part</th>
+                                            <th scope="col">Meaning</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>: DbContext</code></td>
+                                            <td>Our context inherits EF Core’s database-session behaviour.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>DbContextOptions&lt;InventoryDbContext&gt;</code></td>
+                                            <td>The configuration for this context type.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>: base(options)</code></td>
+                                            <td>Pass those options to EF Core’s base constructor.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>DbSet&lt;Item&gt; Items</code></td>
+                                            <td>Query and manage Item entities through <code>db.Items</code>. It is not
+                                                a preloaded list.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <h2>TODO 03 · configure EF Core</h2>
+                    <p>Replace the TODO 03 message in <code>Program.cs</code>. Keep the code inside the existing
+                        <code>try</code> block.
+                    </p>
+                    <details class="s2-details">
+                        <summary>Try before you reveal</summary>
+                        <div class="reveal">
+                            <p>Create an options builder, choose SQL Server, then create the context from those options.
+                            </p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Reveal the configuration</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Program.cs · TODO 03</span><button class="copy copy-btn" type="button">Copy
+                                        code</button>
+                                </div>
+                                <pre tabindex="0"><code>var optionsBuilder = new DbContextOptionsBuilder&lt;InventoryDbContext&gt;();
+optionsBuilder.UseSqlServer(connectionString);
+using var db = new InventoryDbContext(optionsBuilder.Options);
+Console.WriteLine("EF Core configured. No query has run yet.");</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>What is the provider?</strong>
+                            <p><b>SQL Server provider</b> (<code>Microsoft.EntityFrameworkCore.SqlServer</code>): EF
+                                Core’s component that translates LINQ queries for SQL Server.
+                                <code>UseSqlServer(connectionString)</code> selects and configures it.
+                            </p>
+                        </div>
+                    </aside>
+                    <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                        aria-label="Scrollable reference table">
+                        <table class="s2-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Component</th>
+                                    <th scope="col">Job</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>DbContextOptionsBuilder</code></td>
+                                    <td>Build the context configuration.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>UseSqlServer(...)</code></td>
+                                    <td>Select/configure the SQL Server provider.</td>
+                                </tr>
+                                <tr>
+                                    <td><code>Microsoft.Data.SqlClient</code></td>
+                                    <td>The underlying ADO.NET driver: connections, commands and results.</td>
+                                </tr>
+                                <tr>
+                                    <td>SQL Server</td>
+                                    <td>The database engine that executes SQL.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <details class="s2-details">
+                        <summary>Read each configuration line</summary>
+                        <div class="reveal">
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Line</th>
+                                            <th scope="col">Meaning</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>var optionsBuilder = new ...</code></td>
+                                            <td>Create the builder object. var lets C# infer its type.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>optionsBuilder.UseSqlServer(connectionString)</code></td>
+                                            <td>Choose the provider and supply the destination/authentication settings.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>optionsBuilder.Options</code></td>
+                                            <td>Read the configuration built so far.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>using var db = new InventoryDbContext(...)</code></td>
+                                            <td>Create the context. using disposes it when the enclosing scope ends.
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>Console.WriteLine(...)</code></td>
+                                            <td>Print a message; this does not test a database connection.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Configure is not connect</strong>
+                            <p>Creating the context does not open the connection. Building a query does not open it
+                                either.</p>
+                            <p>At <code>ToListAsync()</code>, EF opens the connection, reads the results and normally
+                                closes it after the operation. The context can still be alive.</p>
+                            <p>Printing the loaded list sends no new query. Our <code>using</code> declaration disposes
+                                the context when its scope ends.</p>
+                        </div>
+                    </aside>
+                    <h2>TODO 04 · prove the reader works</h2>
+                    <p>Read all items by name. Preview SQL before execution, then print the loaded list with the
+                        supplied helper.</p>
+                    <details class="s2-details">
+                        <summary>Reveal the baseline query</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Program.cs · TODO 04</span><button class="copy copy-btn" type="button">Copy
+                                        code</button>
+                                </div>
+                                <pre tabindex="0"><code>var baselineQuery = db.Items.OrderBy(item =&gt; item.Name);
+Console.WriteLine(baselineQuery.ToQueryString());
+List&lt;Item&gt; allItems = await baselineQuery.ToListAsync();
+PrintItems("Q0 - Alphabetical inventory", allItems);</code></pre>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Understand the query and helper</summary>
+                        <div class="reveal">
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Scrollable reference table">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Part</th>
+                                            <th scope="col">Meaning</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><code>item =&gt; item.Name</code></td>
+                                            <td>A lambda: use each item’s Name as the sorting key. item is a local
+                                                parameter name.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>ToQueryString()</code></td>
+                                            <td>Create a debugging SQL preview; do not fetch rows.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>await ... ToListAsync()</code></td>
+                                            <td>Execute the database query and collect its objects in a list.</td>
+                                        </tr>
+                                        <tr>
+                                            <td><code>PrintItems(...)</code></td>
+                                            <td>Our supplied display function. It loops over the loaded list.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Check the expected result</summary>
+                        <div class="reveal">
+                            <p><b>16 rows</b> on the fresh setup.</p>
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Expected query result">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Id</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">UnitPrice</th>
+                                            <th scope="col">Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>13</td>
+                                            <td>Arrival</td>
+                                            <td>16.00</td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>9</td>
+                                            <td>Finding Nemo</td>
+                                            <td>10.00</td>
+                                            <td>7</td>
+                                        </tr>
+                                        <tr>
+                                            <td>14</td>
+                                            <td>Gladiator</td>
+                                            <td>24.00</td>
+                                            <td>1</td>
+                                        </tr>
+                                        <tr>
+                                            <td>7</td>
+                                            <td>Inception</td>
+                                            <td>18.00</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>15</td>
+                                            <td>Inside Out</td>
+                                            <td>11.00</td>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>6</td>
+                                            <td>Interstellar</td>
+                                            <td>22.00</td>
+                                            <td>6</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Star Trek</td>
+                                            <td>12.50</td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2</td>
+                                            <td>Star Wars</td>
+                                            <td>20.00</td>
+                                            <td>0</td>
+                                        </tr>
+                                        <tr>
+                                            <td>11</td>
+                                            <td>Stardust</td>
+                                            <td>14.00</td>
+                                            <td>4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>12</td>
+                                            <td>Starship Troopers</td>
+                                            <td>26.00</td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>4</td>
+                                            <td>The Godfather</td>
+                                            <td>25.00</td>
+                                            <td>2</td>
+                                        </tr>
+                                        <tr>
+                                            <td>16</td>
+                                            <td>The Lion King</td>
+                                            <td>12.50</td>
+                                            <td>9</td>
+                                        </tr>
+                                        <tr>
+                                            <td>5</td>
+                                            <td>The Lord of the Rings: The Fellowship of the Ring</td>
+                                            <td>30.00</td>
+                                            <td>4</td>
+                                        </tr>
+                                        <tr>
+                                            <td>8</td>
+                                            <td>The Matrix</td>
+                                            <td>15.00</td>
+                                            <td>8</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1</td>
+                                            <td>Top Gun</td>
+                                            <td>18.00</td>
+                                            <td>5</td>
+                                        </tr>
+                                        <tr>
+                                            <td>10</td>
+                                            <td>Toy Story</td>
+                                            <td>10.00</td>
+                                            <td>0</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details><label class="check"><input type="checkbox" id="baseline-ready"
+                            data-save="baseline-ready"><span>My app reads 16 rows from the Session 05
+                            database.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="2" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-3" aria-labelledby="s5-title-3" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 04 / 08 · 20 MINUTES</span>
+                        <h1 id="s5-title-3" tabindex="-1">Filter and search</h1>
+                    </div>
+                    <div class="card s2-card">
+                        <h2>Start with LINQ</h2>
+
+                        <p>
+                            <strong>LINQ means Language Integrated Query.</strong>
+                            It lets us query data using C#.
+                            EF Core translates supported LINQ expressions into SQL.
+                        </p>
+
+                        <p>
+                            We use <strong>method syntax</strong>: start with
+                            <code>db.Items</code>, then connect operations using dots.
+                        </p>
+
+                        <h3>The operators we will practise</h3>
+
+                        <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                            aria-label="LINQ operators overview">
+                            <table class="s2-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Operator</th>
+                                        <th scope="col">Purpose</th>
+                                        <th scope="col">Stage</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><code>Where</code></td>
+                                        <td>Keep rows matching a condition.</td>
+                                        <td>Build the query</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>OrderBy</code></td>
+                                        <td>Sort by a value.</td>
+                                        <td>Build the query</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ThenBy</code></td>
+                                        <td>Add a second sorting rule.</td>
+                                        <td>Build the query</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>Select</code></td>
+                                        <td>Choose the values to return.</td>
+                                        <td>Build the query</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>ToListAsync</code></td>
+                                        <td>Retrieve the results as a list.</td>
+                                        <td>Execute</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>CountAsync</code></td>
+                                        <td>Return the number of matching rows.</td>
+                                        <td>Execute</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>AnyAsync</code></td>
+                                        <td>Return whether a match exists.</td>
+                                        <td>Execute</td>
+                                    </tr>
+                                    <tr>
+                                        <td><code>FirstOrDefaultAsync</code></td>
+                                        <td>Return one item, or null if none matches.</td>
+                                        <td>Execute</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <p class="small">
+                            This is our roadmap. We begin with filtering, then practise
+                            sorting, selecting values and choosing a result type.
+                        </p>
+                    </div>
+
+                    <div class="card s2-card">
+                        <h2>Read one query before writing your own</h2>
+
+                        <div class="code-shell">
+                            <div class="code-head">
+                                <span>Source → condition → execution</span>
+                                <button class="copy copy-btn" type="button">Copy code</button>
+                            </div>
+                            <pre tabindex="0"><code>var items = await db.Items
+    .Where(item =&gt; item.Stock &gt; 0)
+    .ToListAsync();</code></pre>
+                        </div>
+
+                        <ul>
+                            <li>
+                                <code>db.Items</code> is our entry point for querying
+                                mapped <code>Item</code> entities.
+                            </li>
+                            <li>
+                                <code>Where(...)</code> adds the condition:
+                                stock must be greater than zero.
+                            </li>
+                            <li>
+                                <code>ToListAsync()</code> executes the query
+                                and retrieves a <code>List&lt;Item&gt;</code>.
+                            </li>
+                            <li>
+                                <code>await</code> waits for that operation to finish.
+                                The loaded list is assigned to <code>items</code>.
+                            </li>
+                        </ul>
+
+                        <h3>What does the arrow mean?</h3>
+
+                        <p>
+                            <code>item =&gt; item.Stock &gt; 0</code>
+                            is a <strong>lambda expression</strong>.
+                            Here it describes a condition for an item.
+                        </p>
+
+                        <ul>
+                            <li><code>item</code>: a parameter representing an Item.</li>
+                            <li><code>=&gt;</code>: separates the parameter from its expression.</li>
+                            <li><code>item.Stock &gt; 0</code>: the condition to test.</li>
+                        </ul>
+
+                        <p>
+                            Read it as:
+                            <strong>“Keep items whose stock is greater than zero.”</strong>
+                            This filtering condition is called a <strong>predicate</strong>.
+                        </p>
+
+                        <p class="small">
+                            The parameter name is our choice.
+                            <code>i =&gt; i.Stock &gt; 0</code> means the same thing.
+                        </p>
+
+                        <p>
+                            <strong>Remember:</strong>
+                            <code>Where</code> builds the query.
+                            In this example, SQL runs when <code>ToListAsync()</code>
+                            executes.
+                        </p>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>Ask which records should remain</h2>
+                        <p><code>Where</code> keeps rows that satisfy a condition. Build the condition before
+                            <code>ToListAsync()</code>.
+                        </p>
+                        <div class="code-shell">
+                            <div class="code-head">
+                                <span>Read the predicate</span><button class="copy copy-btn" type="button">Copy
+                                    code</button>
+                            </div>
+                            <pre tabindex="0"><code>item =&gt; item.IsActive &amp;&amp; item.Stock &gt; 0</code></pre>
+                        </div>
+                        <p><code>&amp;&amp;</code> means both conditions must be true. <code>||</code> means either
+                            condition can be true.</p>
+                    </div>
+                    <article class="s05-task" id="task-available"><span class="task-tag">TODO 05 · Q1</span>
+                        <h2>Active and in stock</h2>
+                        <p>Return active items with Stock greater than zero. Order by Name.</p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Combine <code>item.IsActive</code> and <code>item.Stock &gt; 0</code> with
+                                    <code>&amp;&amp;</code>.
+                                </p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 05 · Q1</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>var availableQuery = db.Items
+    .Where(item =&gt; item.IsActive &amp;&amp; item.Stock &gt; 0)
+    .OrderBy(item =&gt; item.Name);
+List&lt;Item&gt; availableItems = await availableQuery.ToListAsync();
+PrintItems("Q1 - Active and in stock", availableItems);</code></pre>
+                                </div>
+                                <p><code>availableQuery</code> describes the request. <code>availableItems</code> is the
+                                    loaded result.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check the expected result</summary>
+                            <div class="reveal">
+                                <p><b>11 rows</b> on the fresh setup.</p>
+                                <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                    aria-label="Expected query result">
+                                    <table class="s2-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">UnitPrice</th>
+                                                <th scope="col">Stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>13</td>
+                                                <td>Arrival</td>
+                                                <td>16.00</td>
+                                                <td>2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>9</td>
+                                                <td>Finding Nemo</td>
+                                                <td>10.00</td>
+                                                <td>7</td>
+                                            </tr>
+                                            <tr>
+                                                <td>15</td>
+                                                <td>Inside Out</td>
+                                                <td>11.00</td>
+                                                <td>5</td>
+                                            </tr>
+                                            <tr>
+                                                <td>6</td>
+                                                <td>Interstellar</td>
+                                                <td>22.00</td>
+                                                <td>6</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Star Trek</td>
+                                                <td>12.50</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>11</td>
+                                                <td>Stardust</td>
+                                                <td>14.00</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>12</td>
+                                                <td>Starship Troopers</td>
+                                                <td>26.00</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>16</td>
+                                                <td>The Lion King</td>
+                                                <td>12.50</td>
+                                                <td>9</td>
+                                            </tr>
+                                            <tr>
+                                                <td>5</td>
+                                                <td>The Lord of the Rings: The Fellowship of the Ring</td>
+                                                <td>30.00</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>8</td>
+                                                <td>The Matrix</td>
+                                                <td>15.00</td>
+                                                <td>8</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Top Gun</td>
+                                                <td>18.00</td>
+                                                <td>5</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <article class="s05-task" id="task-search"><span class="task-tag">TODO 06 · Q2</span>
+                        <h2>Search a title</h2>
+                        <p>Use keyword <code>"Star"</code>. Return names containing it, in alphabetical order. A blank
+                            keyword should return all items.</p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Use <code>Contains(keyword)</code>. Add the filter only if the trimmed keyword has
+                                    text.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 06 · Q2</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>string keyword = "Star";
+keyword = keyword.Trim();
+IQueryable&lt;Item&gt; searchQuery = db.Items;
+if (!string.IsNullOrWhiteSpace(keyword))
+{
+    searchQuery = searchQuery.Where(item =&gt; item.Name.Contains(keyword));
+}
+List&lt;Item&gt; searchItems = await searchQuery
+    .OrderBy(item =&gt; item.Name)
+    .ToListAsync();
+PrintItems("Q2 - Search", searchItems);</code></pre>
+                                </div>
+                                <p><code>Trim()</code> removes surrounding whitespace. <code>IsNullOrWhiteSpace</code>
+                                    checks blank input. <code>!</code> means “not”. Reassigning searchQuery adds a
+                                    condition to the query.</p>
+                                <p class="small">SQL Server collation controls case/accent matching. Try an empty string
+                                    and then <code>"zzzz"</code>.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check the expected result</summary>
+                            <div class="reveal">
+                                <p><b>4 rows</b> on the fresh setup.</p>
+                                <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                    aria-label="Expected query result">
+                                    <table class="s2-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">UnitPrice</th>
+                                                <th scope="col">Stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Star Trek</td>
+                                                <td>12.50</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td>Star Wars</td>
+                                                <td>20.00</td>
+                                                <td>0</td>
+                                            </tr>
+                                            <tr>
+                                                <td>11</td>
+                                                <td>Stardust</td>
+                                                <td>14.00</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>12</td>
+                                                <td>Starship Troopers</td>
+                                                <td>26.00</td>
+                                                <td>3</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <article class="s05-task" id="task-price"><span class="task-tag">TODO 07 · Q3</span>
+                        <h2>Stay within the price range</h2>
+                        <p>Return stocked items priced from 10 to 20, including both limits. Sort by price, then name.
+                        </p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Use <code>&gt;=</code> and <code>&lt;=</code>. Check Stock in the same predicate.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 07 · Q3</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>decimal minimumPrice = 10m;
+decimal maximumPrice = 20m;
+var affordableQuery = db.Items
+    .Where(item =&gt; item.Stock &gt; 0
+        &amp;&amp; item.UnitPrice &gt;= minimumPrice
+        &amp;&amp; item.UnitPrice &lt;= maximumPrice)
+    .OrderBy(item =&gt; item.UnitPrice)
+    .ThenBy(item =&gt; item.Name);
+List&lt;Item&gt; affordableItems = await affordableQuery.ToListAsync();
+PrintItems("Q3 - Stocked items from 10 to 20", affordableItems);</code></pre>
+                                </div>
+                                <p><code>10m</code> is a C# decimal literal. <code>ThenBy</code> adds a second sorting
+                                    key.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check the expected result</summary>
+                            <div class="reveal">
+                                <p><b>8 rows</b> on the fresh setup.</p>
+                                <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                    aria-label="Expected query result">
+                                    <table class="s2-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Id</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">UnitPrice</th>
+                                                <th scope="col">Stock</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>9</td>
+                                                <td>Finding Nemo</td>
+                                                <td>10.00</td>
+                                                <td>7</td>
+                                            </tr>
+                                            <tr>
+                                                <td>15</td>
+                                                <td>Inside Out</td>
+                                                <td>11.00</td>
+                                                <td>5</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td>Star Trek</td>
+                                                <td>12.50</td>
+                                                <td>3</td>
+                                            </tr>
+                                            <tr>
+                                                <td>16</td>
+                                                <td>The Lion King</td>
+                                                <td>12.50</td>
+                                                <td>9</td>
+                                            </tr>
+                                            <tr>
+                                                <td>11</td>
+                                                <td>Stardust</td>
+                                                <td>14.00</td>
+                                                <td>4</td>
+                                            </tr>
+                                            <tr>
+                                                <td>8</td>
+                                                <td>The Matrix</td>
+                                                <td>15.00</td>
+                                                <td>8</td>
+                                            </tr>
+                                            <tr>
+                                                <td>13</td>
+                                                <td>Arrival</td>
+                                                <td>16.00</td>
+                                                <td>2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>1</td>
+                                                <td>Top Gun</td>
+                                                <td>18.00</td>
+                                                <td>5</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <div class="s05-heading">
+                        <span class="section-kicker">BROWSER SIMULATION</span>
+                        <h2>See a filter remove rows</h2>
+                        <p>This uses the prepared sample records in a simulated database. Your Console app is the real
+                            SQL Server exercise.</p>
+                    </div>
+                    <div class="card s2-card s05-filter-lab">
+                        <div class="s05-controls">
+                            <label for="filter-mode">Filter<select id="filter-mode">
+                                    <option value="all">All items</option>
+                                    <option value="available">Active and in stock</option>
+                                    <option value="search">Name contains Star</option>
+                                    <option value="price">Stocked · price 10 to 20</option>
+                                </select></label><button class="button s2-btn primary" id="filter-run"
+                                type="button">Apply filter</button>
+                        </div>
+                        <div id="filter-result" aria-live="polite"></div>
+                    </div>
+                    <label class="check"><input type="checkbox" id="filters-ready" data-save="filters-ready"><span>I can
+                            build Boolean, numeric and text filters before execution.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="3" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-4" aria-labelledby="s5-title-4" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 05 / 08 · 15 MINUTES</span>
+                        <h1 id="s5-title-4" tabindex="-1">Sort and shape the result</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>First order, then shape the result</h2>
+                        <ul>
+                            <li>
+                                <code>OrderByDescending</code>: highest value first.
+                            </li>
+                            <li>
+                                <code>ThenBy</code>: add a second sorting key.
+                            </li>
+                            <li>
+                                <code>Select</code>: choose the values to return.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="prediction">
+                        <label for="projection-prediction"><b>Before you run</b> · The request asks for Name and
+                            UnitPrice only. Will each result still be a full Item object?</label><textarea
+                            id="projection-prediction" data-save="projection-prediction" rows="2"
+                            placeholder="Write your expected result…"></textarea><small>Your note saves on this
+                            device.</small>
+                    </div>
+                    <article class="s05-task" id="task-projection"><span class="task-tag">TODO 08 · Q4</span>
+                        <h2>Names and prices</h2>
+                        <p>Show Name and UnitPrice. Sort highest price first, then alphabetically for equal prices.</p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Order the source, then project with
+                                    <code>Select(item =&gt; new { item.Name, item.UnitPrice })</code>.
+                                </p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 08 · Q4</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>var priceQuery = db.Items
+    .OrderByDescending(item =&gt; item.UnitPrice)
+    .ThenBy(item =&gt; item.Name)
+    .Select(item =&gt; new { item.Name, item.UnitPrice });
+Console.WriteLine(priceQuery.ToQueryString());
+var priceRows = await priceQuery.ToListAsync();
+Console.WriteLine("Q4 - Names and prices");
+foreach (var row in priceRows)
+{
+    Console.WriteLine($"{row.Name} | {row.UnitPrice:F2}");
+}</code></pre>
+                                </div>
+                                <p><code>new { ... }</code> creates an anonymous result shape. Each row here has Name
+                                    and UnitPrice, rather than all Item properties.</p>
+                                <p><code>var</code> lets C# infer that type. The loop uses <code>row.Name</code> and
+                                    <code>row.UnitPrice</code>. <code>:F2</code> prints two decimal places.
+                                </p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check the expected result</summary>
+                            <div class="reveal">
+                                <p><b>16 rows</b> on the fresh setup.</p>
+                                <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                    aria-label="Expected query result">
+                                    <table class="s2-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">UnitPrice</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>The Lord of the Rings: The Fellowship of the Ring</td>
+                                                <td>30.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Starship Troopers</td>
+                                                <td>26.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>The Godfather</td>
+                                                <td>25.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Gladiator</td>
+                                                <td>24.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Interstellar</td>
+                                                <td>22.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Star Wars</td>
+                                                <td>20.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Inception</td>
+                                                <td>18.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Top Gun</td>
+                                                <td>18.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Arrival</td>
+                                                <td>16.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>The Matrix</td>
+                                                <td>15.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Stardust</td>
+                                                <td>14.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Star Trek</td>
+                                                <td>12.50</td>
+                                            </tr>
+                                            <tr>
+                                                <td>The Lion King</td>
+                                                <td>12.50</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Inside Out</td>
+                                                <td>11.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Finding Nemo</td>
+                                                <td>10.00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Toy Story</td>
+                                                <td>10.00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <details class="s2-details">
+                        <summary>Smaller first step: return names only</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Alternative query · optional</span><button class="copy copy-btn"
+                                        type="button">Copy code</button>
+                                </div>
+                                <pre tabindex="0"><code>List&lt;string&gt; names = await db.Items
+    .OrderBy(item =&gt; item.Name)
+    .Select(item =&gt; item.Name)
+    .ToListAsync();</code></pre>
+                            </div>
+                            <p>The result is a list of strings. Use a matching string loop to display it.</p>
+                        </div>
+                    </details>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Read the SQL preview</strong>
+                            <p>Find <code>SELECT</code> and <code>ORDER BY</code>. For Q4, the projection requests Name
+                                and UnitPrice. The exact SQL formatting can vary.</p>
+                        </div>
+                    </aside>
+                    <div class="s05-shape-demo card s2-card">
+                        <h2>Choose the result shape</h2>
+                        <div class="s05-segment" role="group" aria-label="Choose a projection">
+                            <button type="button" data-shape="entity" aria-pressed="true">Whole Item</button><button
+                                type="button" data-shape="name" aria-pressed="false">Name only</button><button
+                                type="button" data-shape="price" aria-pressed="false">Name + price</button>
+                        </div>
+                        <div id="shape-demo" class="s05-live" aria-live="polite"></div>
+                    </div>
+                    <label class="check"><input type="checkbox" id="projection-ready"
+                            data-save="projection-ready"><span>I can explain how Select changes the returned values and
+                            display code.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="4" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-5" aria-labelledby="s5-title-5" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 06 / 08 · 15 MINUTES</span>
+                        <h1 id="s5-title-5" tabindex="-1">Choose the result you need</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>Not every question needs a list</h2>
+                        <p>Choose the result you need before choosing the final method.</p>
+                        <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                            aria-label="Scrollable reference table">
+                            <table class="s2-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Question</th>
+                                        <th scope="col">Method</th>
+                                        <th scope="col">Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>How many match?</td>
+                                        <td><code>CountAsync(...)</code></td>
+                                        <td><code>int</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Does a match exist?</td>
+                                        <td><code>AnyAsync(...)</code></td>
+                                        <td><code>bool</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Which item has this Id?</td>
+                                        <td><code>FirstOrDefaultAsync(...)</code></td>
+                                        <td><code>Item?</code></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Which rows match?</td>
+                                        <td><code>ToListAsync()</code></td>
+                                        <td>A list, possibly empty.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <article class="s05-task" id="task-scalars"><span class="task-tag">TODO 09 · Q5</span>
+                        <h2>Count and test existence</h2>
+                        <p>Count active items. Then test whether any active item has zero stock.</p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Call <code>CountAsync</code> and <code>AnyAsync</code> with their own predicates.
+                                    Await each operation.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 09 · Q5</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>int activeCount = await db.Items.CountAsync(item =&gt; item.IsActive);
+bool hasActiveZeroStock = await db.Items
+    .AnyAsync(item =&gt; item.IsActive &amp;&amp; item.Stock == 0);
+Console.WriteLine($"Active items: {activeCount}");
+Console.WriteLine($"Any active item with zero stock: {hasActiveZeroStock}");</code></pre>
+                                </div>
+                                <p>These are two database queries. <code>CountAsync</code> returns a number;
+                                    <code>AnyAsync</code> returns true or false. No list needs to be loaded.
+                                </p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check the expected result</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Fresh setup output</span><button class="copy copy-btn" type="button">Copy
+                                            code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>Active items: 13
+Any active item with zero stock: True</code></pre>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <article class="s05-task" id="task-single"><span class="task-tag">TODO 10 · Q6</span>
+                        <h2>Find one item</h2>
+                        <p>Find Id 3. Then change the Id to 999 and run again. Show a clear message when no item exists.
+                        </p>
+                        <details class="s2-details">
+                            <summary>Hint</summary>
+                            <div class="reveal">
+                                <p>Use <code>FirstOrDefaultAsync</code> with an Id condition. Check for
+                                    <code>null</code> before reading the properties.
+                                </p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Reveal a solution</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Program.cs · TODO 10 · Q6</span><button class="copy copy-btn"
+                                            type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>int selectedId = 3;
+Item? selectedItem = await db.Items
+    .FirstOrDefaultAsync(item =&gt; item.Id == selectedId);
+if (selectedItem is null)
+{
+    Console.WriteLine("Item not found.");
+}
+else
+{
+    Console.WriteLine($"Found: {selectedItem.Id} | {selectedItem.Name}");
+}</code></pre>
+                                </div>
+                                <p><code>Item?</code> allows a missing result. <code>is null</code> checks for absence.
+                                    Id is a primary key, so at most one row can match this condition.</p>
+                            </div>
+                        </details>
+                        <details class="s2-details">
+                            <summary>Check both outcomes</summary>
+                            <div class="reveal">
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Id 3</span><button class="copy copy-btn" type="button">Copy code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>Found: 3 | Star Trek</code></pre>
+                                </div>
+                                <div class="code-shell">
+                                    <div class="code-head">
+                                        <span>Id 999</span><button class="copy copy-btn" type="button">Copy
+                                            code</button>
+                                    </div>
+                                    <pre tabindex="0"><code>Item not found.</code></pre>
+                                </div>
+                            </div>
+                        </details>
+                    </article>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Build first. Execute with the right method.</strong>
+                            <p><code>Where</code>, <code>OrderBy</code> and <code>Select</code> build our EF query. They
+                                have no Async suffix. <code>ToListAsync</code>, <code>CountAsync</code>,
+                                <code>AnyAsync</code> and <code>FirstOrDefaultAsync</code> execute it.
+                            </p>
+                            <p>Await one operation before starting another on the same context.</p>
+                        </div>
+                    </aside>
+                    <details class="s2-details">
+                        <summary>Database count or list count?</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Two different places</span><button class="copy copy-btn" type="button">Copy
+                                        code</button>
+                                </div>
+                                <pre tabindex="0"><code>int countFromDatabase = await db.Items.CountAsync();
+int countFromLoadedList = allItems.Count;</code></pre>
+                            </div>
+                            <p>The first line sends a query. The second reads the list already in memory.</p>
+                        </div>
+                    </details>
+                    <div class="card s2-card">
+                        <h2>Quick check: choose a final method</h2>
+                        <label for="terminal-choice">You only need to know whether an active item has zero
+                            stock.</label><select id="terminal-choice">
+                            <option value="">Choose one…</option>
+                            <option value="list">ToListAsync</option>
+                            <option value="any">AnyAsync</option>
+                            <option value="count">CountAsync</option>
+                        </select><button class="button s2-btn primary" id="terminal-check" type="button">Check my
+                            choice</button>
+                        <p id="terminal-feedback" class="s05-feedback" role="status"></p>
+                    </div>
+                    <label class="check"><input type="checkbox" id="result-ready" data-save="result-ready"><span>I can
+                            choose and handle a list, count, Boolean and missing single item.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="5" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-6" aria-labelledby="s5-title-6" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 07 / 08 · 20 MINUTES</span>
+                        <h1 id="s5-title-6" tabindex="-1">Build a complete report</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>The owner’s report request</h2>
+                        <p>“Show active items that are in stock, contain <b>Star</b> in their name, and cost <b>25 or
+                                less</b>.”</p>
+                        <ul>
+                            <li>Order by Name.</li>
+                            <li>Return Id, Name, UnitPrice and Stock.</li>
+                            <li>Preview SQL before executing the query.</li>
+                        </ul>
+                    </div>
+                    <div class="prediction">
+                        <label for="report-prediction"><b>Before you run</b> · Inspect the sample data. Which Ids should
+                            appear, and in what order?</label><textarea id="report-prediction"
+                            data-save="report-prediction" rows="2"
+                            placeholder="Write your expected result…"></textarea><small>Your note saves on this
+                            device.</small>
+                    </div>
+                    <h2>TODO 11 · build the combined report</h2>
+                    <p>Use the earlier query families. Keep the query definition separate from its awaited execution.
+                    </p>
+                    <details class="s2-details">
+                        <summary>Hint 1 · keep the matching rows</summary>
+                        <div class="reveal">
+                            <p>Combine active status, stock, keyword and maximum price with <code>&amp;&amp;</code>.</p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Hint 2 · order and project</summary>
+                        <div class="reveal">
+                            <p>Apply <code>OrderBy(item =&gt; item.Name)</code>, then <code>Select</code> with the four
+                                requested values.</p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Reveal a solution</summary>
+                        <div class="reveal">
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Program.cs · TODO 11</span><button class="copy copy-btn" type="button">Copy
+                                        code</button>
+                                </div>
+                                <pre tabindex="0"><code>string reportKeyword = "Star";
+decimal reportMaximumPrice = 25m;
+var reportQuery = db.Items
+    .Where(item =&gt; item.IsActive &amp;&amp; item.Stock &gt; 0
+        &amp;&amp; item.Name.Contains(reportKeyword)
+        &amp;&amp; item.UnitPrice &lt;= reportMaximumPrice)
+    .OrderBy(item =&gt; item.Name)
+    .Select(item =&gt; new { item.Id, item.Name, item.UnitPrice, item.Stock });
+Console.WriteLine(reportQuery.ToQueryString());
+var reportRows = await reportQuery.ToListAsync();
+Console.WriteLine("Q7 - Inventory report");
+foreach (var row in reportRows)
+{
+    Console.WriteLine($"{row.Id} | {row.Name} | {row.UnitPrice:F2} | {row.Stock}");
+}</code></pre>
+                            </div>
+                            <p>The query variable describes the report. ToQueryString previews it. ToListAsync executes
+                                it. The final loop prints the projected list.</p>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Check the expected result</summary>
+                        <div class="reveal">
+                            <p><b>2 rows</b> on the fresh setup.</p>
+                            <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                aria-label="Expected query result">
+                                <table class="s2-table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Id</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">UnitPrice</th>
+                                            <th scope="col">Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>3</td>
+                                            <td>Star Trek</td>
+                                            <td>12.50</td>
+                                            <td>3</td>
+                                        </tr>
+                                        <tr>
+                                            <td>11</td>
+                                            <td>Stardust</td>
+                                            <td>14.00</td>
+                                            <td>4</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </details>
+                    <h2>Trace one record through your query</h2>
+                    <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                        aria-label="Scrollable reference table">
+                        <table class="s2-table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Record</th>
+                                    <th scope="col">Why?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Star Wars · Id 2</td>
+                                    <td>Excluded: Stock is 0.</td>
+                                </tr>
+                                <tr>
+                                    <td>Star Trek · Id 3</td>
+                                    <td>Included: all four conditions are true.</td>
+                                </tr>
+                                <tr>
+                                    <td>Stardust · Id 11</td>
+                                    <td>Included: all four conditions are true.</td>
+                                </tr>
+                                <tr>
+                                    <td>Starship Troopers · Id 12</td>
+                                    <td>Excluded: UnitPrice is 26.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card s2-card">
+                        <h2>Explain your working report</h2>
+                        <label for="report-explanation">Which line executes SQL, and what does your loop
+                            read?</label><textarea id="report-explanation" data-save="report-explanation" rows="3"
+                            placeholder="Name the execution method and the loaded result…"></textarea>
+                    </div>
+                    <label class="check"><input type="checkbox" id="report-ready" data-save="report-ready"><span>My Q7
+                            output contains Id 3 and Id 11, and I can explain the execution point.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="6" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next>Next →</button>
+                        </div>
+                    </footer>
+                </section>
+                <section class="lesson" id="s5-panel-7" aria-labelledby="s5-title-7" hidden>
+                    <div class="panel-head">
+                        <span class="section-kicker">STEP 08 / 08 · 10 MINUTES</span>
+                        <h1 id="s5-title-7" tabindex="-1">Review and submit</h1>
+                    </div>
+                    <div class="card s2-card ">
+                        <h2>Check your competency</h2>
+                        <p>You can now rebuild a reader and turn a stated requirement into a checked EF Core query.</p>
+                        <div id="exit-quiz"></div>
+                    </div>
+                    <h2>Submit your evidence</h2>
+                    <ol>
+                        <li>Your completed solution, without <code>bin</code>, <code>obj</code> or <code>.vs</code>.
+                        </li>
+                        <li>One screenshot or saved output of Q7.</li>
+                        <li>Your answers in <code>evidence.md</code>: execution line, result shape, list printing and
+                            missing Id.</li>
+                    </ol>
+                    <div class="button-row">
+                        <a class="button s2-btn primary" href="downloads/evidence.md" download>↓ Evidence prompts</a><a
+                            class="button s2-btn secondary" href="downloads/LINQ_Quick_Reference.pdf" target="_blank"
+                            rel="noopener">Open LINQ quick reference</a>
+                    </div>
+                    <details class="s2-details">
+                        <summary>Optional extension · a whole month</summary>
+                        <div class="reveal">
+                            <p>Use AddedAt to find records added during November. Include the start; exclude the next
+                                month’s start.</p>
+                            <div class="code-shell">
+                                <div class="code-head">
+                                    <span>Optional · paste after a working context</span><button class="copy copy-btn"
+                                        type="button">Copy code</button>
+                                </div>
+                                <pre tabindex="0"><code>DateTime from = new(2026, 11, 1);
+DateTime until = new(2026, 12, 1);
+var novemberQuery = db.Items
+    .Where(item =&gt; item.AddedAt &gt;= from &amp;&amp; item.AddedAt &lt; until)
+    .OrderBy(item =&gt; item.AddedAt)
+    .ThenBy(item =&gt; item.Id);
+List&lt;Item&gt; novemberItems = await novemberQuery.ToListAsync();
+PrintItems("Extension - Added during November", novemberItems);</code></pre>
+                            </div>
+                            <p><code>2026-11-30 23:59</code> is included. <code>2026-12-01 00:00</code> is excluded. The
+                                prepared data uses a single classroom time convention.</p>
+                            <details class="s2-details">
+                                <summary>Check the expected result</summary>
+                                <div class="reveal">
+                                    <p><b>13 rows</b> on the fresh setup.</p>
+                                    <div class="table-wrap s2-table-wrap" tabindex="0" role="region"
+                                        aria-label="Expected query result">
+                                        <table class="s2-table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Id</th>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">UnitPrice</th>
+                                                    <th scope="col">Stock</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>2</td>
+                                                    <td>Star Wars</td>
+                                                    <td>20.00</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3</td>
+                                                    <td>Star Trek</td>
+                                                    <td>12.50</td>
+                                                    <td>3</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>5</td>
+                                                    <td>The Lord of the Rings: The Fellowship of the Ring</td>
+                                                    <td>30.00</td>
+                                                    <td>4</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>6</td>
+                                                    <td>Interstellar</td>
+                                                    <td>22.00</td>
+                                                    <td>6</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>7</td>
+                                                    <td>Inception</td>
+                                                    <td>18.00</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>8</td>
+                                                    <td>The Matrix</td>
+                                                    <td>15.00</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>9</td>
+                                                    <td>Finding Nemo</td>
+                                                    <td>10.00</td>
+                                                    <td>7</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>10</td>
+                                                    <td>Toy Story</td>
+                                                    <td>10.00</td>
+                                                    <td>0</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>11</td>
+                                                    <td>Stardust</td>
+                                                    <td>14.00</td>
+                                                    <td>4</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>12</td>
+                                                    <td>Starship Troopers</td>
+                                                    <td>26.00</td>
+                                                    <td>3</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>13</td>
+                                                    <td>Arrival</td>
+                                                    <td>16.00</td>
+                                                    <td>2</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>14</td>
+                                                    <td>Gladiator</td>
+                                                    <td>24.00</td>
+                                                    <td>1</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>15</td>
+                                                    <td>Inside Out</td>
+                                                    <td>11.00</td>
+                                                    <td>5</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </details>
+                    <details class="s2-details">
+                        <summary>Optional comparison · First or Single?</summary>
+                        <div class="reveal">
+                            <p><code>FirstOrDefaultAsync</code> returns the first match or null. Use explicit ordering
+                                if “first” must be predictable across several matches.</p>
+                            <p><code>SingleOrDefaultAsync</code> returns one match or null, and throws if several rows
+                                match. It expresses an expectation of uniqueness; it does not create a database
+                                constraint.</p>
+                        </div>
+                    </details>
+                    <aside class="teacher-note s2-note"><img class="s2-note__mascot" src="images/db-mascot-teacher.webp"
+                            alt="" width="64" height="64">
+                        <div class="s2-note__content">
+                            <strong>Where this goes next</strong>
+                            <p>Week 3 adds insert, update, delete, change tracking and migrations. Week 4 develops LINQ
+                                and async practice. Week 5 adds related tables, foreign keys and navigation properties.
+                            </p>
+                        </div>
+                    </aside>
+                    <section id="sources" class="s05-sources" aria-labelledby="sources-title">
+                        <h2 id="sources-title">Quick references and downloads</h2>
+                        <ul>
+                            <li><a href="downloads/EF10_Session05_Student_Starter.zip" download>Student starter and SQL
+                                    scripts</a></li>
+                            <li>
+                                <a href="downloads/LINQ_Quick_Reference.pdf" target="_blank" rel="noopener">LINQ quick
+                                    reference</a> · pages 1–3 support today’s core tasks.
+                            </li>
+                            <li>
+                                <a href="downloads/CODE-EXPLAINED.md" download>Code explained</a> · supplied setup and
+                                new syntax.
+                            </li>
+                        </ul>
+                        <details class="s2-details">
+                            <summary>Official documentation</summary>
+                            <div class="reveal">
+                                <ul>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/providers/sql-server/"
+                                            target="_blank" rel="noopener">SQL Server provider</a></li>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/"
+                                            target="_blank" rel="noopener">DbContext and options</a></li>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/modeling/entity-types"
+                                            target="_blank" rel="noopener">Entities and table names</a></li>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/modeling/entity-properties"
+                                            target="_blank" rel="noopener">Properties and column mapping</a></li>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/querying/" target="_blank"
+                                            rel="noopener">Querying data</a></li>
+                                    <li><a href="https://learn.microsoft.com/en-us/ef/core/miscellaneous/async"
+                                            target="_blank" rel="noopener">Asynchronous queries</a></li>
+                                </ul>
+                            </div>
+                        </details>
+                        <p class="small">Classroom extension of the Inventory pattern used in Session 04. Query
+                            exercises adapt the supplied LINQ handout and Microsoft documentation.</p>
+                    </section><label class="check"><input type="checkbox" id="evidence-ready"
+                            data-save="evidence-ready"><span>I completed the core report and prepared the requested
+                            evidence.</span></label>
+                    <footer class="step-footer"><button class="button secondary s2-btn" data-prev>← Previous</button>
+                        <div class="step-actions">
+                            <button class="button s2-btn primary" data-complete="7" aria-pressed="false">✓ Mark step
+                                complete</button><button class="button secondary s2-btn" data-next disabled>Next
+                                →</button>
+                        </div>
+                    </footer>
+                </section>
+                <p class="page-foot">TVET Interactive Codelab Studio · Database Management · Session 05</p>
+            </main>
+        </div>
+    </div>
+    <div class="toast" id="s5-toast" role="status"></div>
+    <dialog id="s5-reset-dialog" aria-labelledby="s5-reset-title">
+        <h2 id="s5-reset-title">Reset Session 05?</h2>
+        <p>This clears this session’s saved progress, checkboxes, quiz choices and notes on this device.</p>
+        <div class="button-row">
+            <button class="button s2-btn primary" id="s5-confirm-reset" type="button">Reset Session 05</button><button
+                class="button secondary s2-btn" id="s5-cancel-reset" type="button">Keep my progress</button>
+        </div>
+    </dialog><noscript>
+        <p class="noscript">Enable JavaScript to navigate the codelab. The starter and references are available in the
+            downloads folder.</p>
+    </noscript>
+</body>
+
+</html>
